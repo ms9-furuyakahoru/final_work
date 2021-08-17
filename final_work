@@ -1,0 +1,186 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <iostream>
+#include <string>
+#include <windows.h>
+#include <algorithm>
+#include <vector>
+#include <time.h>
+#include <stdio.h>
+#include <conio.h>
+#include <sstream>
+#include <iterator>
+
+using namespace std;
+using std::vector;
+
+
+//クラスの定義
+class Alarm {
+
+	int num;
+
+public:
+	string time;
+	string massage;
+	string music;
+	Alarm(int n = 0) { num = n; }
+
+	Alarm(string T, string Ma, string Mu) {
+		time = T;
+		massage = Ma;
+		music = Mu;
+	}
+	//==演算子をオーバーロード
+	bool operator ==(const Alarm& r) const {
+		return num == r.num;
+	}
+	//!=演算子をオーバーロード
+	bool operator !=(const Alarm& r) const {
+		return !(*this == r);
+	}
+	//比較関数の定義
+	bool operator< (const Alarm& another) const{
+		return time < another.time;
+	}
+};
+
+
+int main() {
+	std::string ss;
+	vector<Alarm> vec;
+	int n;
+	cout << "アラームを何個設定しますか？" << endl;
+	cin >> n;
+
+	for (int i = 0; i < n; ++i) {
+		int h;
+		int m;
+		int s;
+		string word;
+		string mu;
+
+		cout << "何時何分何秒に設定しますか？" << endl;
+		cin >> h;
+		cout << "時" << endl;
+		cin >> m;
+		cout << "分" << endl;
+		cin >> s;
+		cout << "秒" << endl;
+		cout << h << "時" << m << "分" << s << "秒に何て表示させますか?" << endl;
+		cin >> word;
+		cout << "アラームの音はAとBのどちらにしますか？" << endl;
+		cin >> mu;
+
+		std::stringstream ss;
+
+		ss << h << "時" << m << "分" << s << "秒";
+		std::string TIME = ss.str();
+
+		vec.push_back(Alarm(TIME, word, mu));
+	};
+	sort(vec.begin(), vec.end()); //timeの降順
+
+	cout << "設定したアラーム" << endl;
+	for (int k = 0; k < vec.size(); k++) {
+		cout << vec[k].time << ",「" << vec[k].massage << "」, " << vec[k].music << endl;
+
+	}
+
+	vector<string>vect;
+	vect.resize(vec.size());
+	for (size_t i = 0; i < vec.size(); i++) {
+		vect[i] = vec[i].time;
+	}
+
+	vector<string>vecma;
+	vecma.resize(vec.size());
+	for (size_t i = 0; i < vec.size(); i++) {
+		vecma[i] = vec[i].massage;
+	}
+
+	vector<string>vecmu;
+	vecmu.resize(vec.size());
+	for (size_t i = 0; i < vec.size(); i++) {
+		vecmu[i] = vec[i].music;
+	}
+
+
+	//現在時刻の取得
+	while (true) {
+		time_t timer; //時刻を取り出す
+		struct tm* local;
+		int year, month, day, hour, minute, second;
+
+		timer = time(NULL); //現在時刻を取得
+		local = localtime(&timer); //地方時に変換
+
+		year = local->tm_year + 1900;
+		month = local->tm_mon + 1;
+		day = local->tm_mday;
+		hour = local->tm_hour;
+		minute = local->tm_min;
+		second = local->tm_sec;;
+
+		std::stringstream ss;
+		ss << hour << "時" << minute << "分" << second << "秒";
+		std::string alarm = ss.str();
+
+		string A;
+		string B;
+
+		for (int i = 0; i < vec.size(); i++) {
+			auto it = std::find(vect.begin(), vect.end(), alarm);
+			if (it != vect.end()) {
+		        auto it1 = std::find(vecmu.begin(), vecmu.end(), A);
+				if (it1 != vecmu.end()) {
+					cout << vecma[i] << endl;
+					Beep(294, 400); //レの音
+					Beep(349, 300); //ファ＃
+					Beep(392, 200); //ソ
+					Beep(440, 200); //ラ
+					Beep(294, 200); //レ
+					Beep(349, 200); //ファ＃
+					Beep(440, 200); //ラ
+					Beep(392, 400); //ソ
+					Beep(494, 300); //シの音
+					Beep(523, 200); //ド＃u
+					Beep(550, 200); //レ
+					Beep(392, 200); //ソ
+					Beep(494, 200); //シ
+					Beep(550, 200); //レu
+					Beep(440, 200); //ラ
+					Beep(550, 200); //レu
+					Beep(494, 200); //シ
+					Beep(440, 200); //ラ
+					Beep(392, 200); //ソの音
+					Beep(349, 200); //ファ＃
+					Beep(294, 200); //レ
+					Beep(330, 200); //ミ
+					Beep(349, 200); //ファ＃
+					Beep(294, 200); //レ
+					Beep(330, 200); //ミ
+					Beep(270, 300); //ド＃
+					Beep(294, 500); //レ
+					break;
+				}
+				auto it2 = std::find(vecmu.begin(), vecmu.end(), B);
+				if (it2 != vecmu.end()) {
+					cout << vecma[i] << endl;
+					Beep(440, 300); //ラの音
+					Beep(349, 300); //ファ
+					Beep(294, 300); //レ
+					Beep(262, 300); //ド
+					Beep(440, 300); //ラ
+					Beep(349, 700); //ファ
+					Beep(294, 300); //レ
+					Beep(392, 300); //ソ
+					break;
+				}
+				break;
+			}
+		}
+
+	}
+	return 0;
+}
